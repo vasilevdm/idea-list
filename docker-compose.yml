@@ -14,6 +14,7 @@ services:
     working_dir: /app/back
     volumes:
       - ./back:/app/back
+      - ./.docker/app/wait-for-it.sh:/app/wait-for-it.sh
 
   db:
     image: postgres:14-alpine
@@ -23,6 +24,9 @@ services:
       POSTGRES_PASSWORD: pass
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./.docker/db/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh
+    ports:
+      - "5432:5432"
 
   node:
     image: node:lts-alpine
