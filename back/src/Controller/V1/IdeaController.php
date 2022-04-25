@@ -8,6 +8,8 @@ use App\Action\IdeaList\IdeaListAction;
 use App\Action\IdeaList\IdeaListRequest;
 use App\Action\IdeaPage\IdeaPageAction;
 use App\Action\IdeaPage\IdeaPageRequest;
+use App\Action\IdeaUpdate\IdeaUpdateAction;
+use App\Action\IdeaUpdate\IdeaUpdateRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -62,5 +64,15 @@ class IdeaController extends AbstractController
         ));
 
         return new JsonResponse($this->normalizer->normalize($result));
+    }
+
+    /**
+     * @Route("/ideas/{id}", methods={"PATCH"}, name="app.v1.ideas.update", requirements={"id"="\d+"})
+     */
+    public function update(IdeaUpdateRequest $request, IdeaUpdateAction $action): JsonResponse
+    {
+        $action->handle($request);
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

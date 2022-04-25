@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\V1;
 
+use App\Repository\IdeaRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,6 +40,17 @@ class IdeaControllerTest extends WebTestCase
 
         $this->client->request(Request::METHOD_GET, $this->url.'/list');
         $this->assertResponseIsSuccessful();
+    }
+
+    public function testUpdateSuccess()
+    {
+        $data = '{"title": "test", "completed": true}';
+        $idea = $this->client->getContainer()->get(IdeaRepository::class)->findOneBy([]);
+
+        $this->client->request(Request::METHOD_PATCH, $this->url.'/'.$idea->getId(), [], [], [], $data);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
     protected function setUp(): void

@@ -8,18 +8,25 @@ use App\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\DecoderInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ActionRequestResolver implements ArgumentValueResolverInterface
 {
-    private SerializerInterface $serializer;
+    private DecoderInterface $decoder;
+
+    private DenormalizerInterface $denormalizer;
 
     private ValidatorInterface $validator;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator)
-    {
-        $this->serializer = $serializer;
+    public function __construct(
+        DecoderInterface $decoder,
+        DenormalizerInterface $denormalizer,
+        ValidatorInterface $validator
+    ) {
+        $this->decoder = $decoder;
+        $this->denormalizer = $denormalizer;
         $this->validator = $validator;
     }
 
@@ -41,7 +48,18 @@ class ActionRequestResolver implements ArgumentValueResolverInterface
         }
 
         try {
-            $dto = $this->serializer->deserialize($request->getContent(), $argument->getType(), 'json');
+            /** @var array<string,string|bool> $requestArray */
+            $requestArray = $this->decoder->decode($request->getContent(), 'json');
+        } catch (\Throwable $exception) {
+            throw new DomainException($exception->getMessage());
+        }
+
+        if ($request->attributes->has('id')) {
+            $requestArray = array_merge($requestArray, ['id' => $request->attributes->getInt('id')]);
+        }
+
+        try {
+            $dto = $this->denormalizer->denormalize($requestArray, $argument->getType());
         } catch (\Throwable $exception) {
             throw new DomainException($exception->getMessage());
         }
