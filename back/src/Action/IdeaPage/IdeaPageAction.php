@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Action\IdeaList;
+namespace App\Action\IdeaPage;
 
 use App\DTO\IdeaDTO;
 use App\Entity\Idea;
 use App\Repository\IdeaRepository;
 
-class IdeaListAction
+class IdeaPageAction
 {
     private IdeaRepository $repository;
 
@@ -19,14 +19,14 @@ class IdeaListAction
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\NoResultException
      */
-    public function handle(IdeaListRequest $request): IdeaListResponse
+    public function handle(IdeaPageRequest $request): IdeaPageResponse
     {
-        $ideas = $this->repository->paginateById($request->getIdeaId(), $request->getDirection(), $request->getPerPage());
+        $ideas = $this->repository->paginateByPage($request->getPage(), $request->getPerPage());
         $result = array_map(
             fn (Idea $idea) => new IdeaDTO($idea->getId(), $idea->getTitle(), $idea->getCompleted()),
             $ideas
         );
 
-        return new IdeaListResponse($result);
+        return new IdeaPageResponse($result);
     }
 }

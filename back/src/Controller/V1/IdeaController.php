@@ -6,6 +6,8 @@ use App\Action\IdeaCreate\IdeaCreateAction;
 use App\Action\IdeaCreate\IdeaCreateRequest;
 use App\Action\IdeaList\IdeaListAction;
 use App\Action\IdeaList\IdeaListRequest;
+use App\Action\IdeaPage\IdeaPageAction;
+use App\Action\IdeaPage\IdeaPageRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,13 +38,27 @@ class IdeaController extends AbstractController
     }
 
     /**
-     * @Route("/ideas", methods={"GET"}, name="app.v1.ideas.list")
+     * @Route("/ideas/page", methods={"GET"}, name="app.v1.ideas.page")
+     */
+    public function page(Request $request, IdeaPageAction $action): JsonResponse
+    {
+        $result = $action->handle(new IdeaPageRequest(
+            $request->query->getInt('page', 1),
+            $request->query->getInt('perPage', 10)
+        ));
+
+        return new JsonResponse($this->normalizer->normalize($result));
+    }
+
+    /**
+     * @Route("/ideas/list", methods={"GET"}, name="app.v1.ideas.list")
      */
     public function list(Request $request, IdeaListAction $action): JsonResponse
     {
         $result = $action->handle(new IdeaListRequest(
-            $request->query->getInt('page', 1),
-            $request->query->getInt('per-page', 10)
+            $request->query->getInt('ideaId', 0),
+            $request->query->getAlpha('direction', 'next'),
+            $request->query->getInt('perPage', 10)
         ));
 
         return new JsonResponse($this->normalizer->normalize($result));

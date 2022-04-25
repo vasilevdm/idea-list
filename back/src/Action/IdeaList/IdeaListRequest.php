@@ -6,19 +6,27 @@ use App\Action\ActionRequestInterface;
 
 class IdeaListRequest implements ActionRequestInterface
 {
-    private int $page;
+    private int $ideaId;
+
+    private string $direction;
 
     private int $perPage;
 
-    public function __construct(int $page, int $perPage)
+    public function __construct(int $ideaId, string $direction, int $perPage)
     {
-        $this->page = $page;
+        $this->ideaId = $ideaId;
+        $this->direction = $direction;
         $this->perPage = $perPage;
     }
 
-    public function getPage(): int
+    public function getIdeaId(): int
     {
-        return $this->page;
+        return $this->ideaId;
+    }
+
+    public function getDirection(): string
+    {
+        return $this->direction;
     }
 
     public function getPerPage(): int

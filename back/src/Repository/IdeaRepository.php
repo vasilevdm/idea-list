@@ -3,10 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Idea;
+use App\Exception\DomainException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,6 +19,9 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class IdeaRepository extends ServiceEntityRepository
 {
+    public const NEXT = 'next';
+    public const PREV = 'prev';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Idea::class);
@@ -48,39 +51,56 @@ class IdeaRepository extends ServiceEntityRepository
         }
     }
 
-    public function getListQuery(): Query
+    /**
+     * @return Idea[]
+     *
+     * @throws \Exception
+     */
+    public function paginateById(int $ideaId, string $direction, int $perPage): array
     {
-        return $this->createQueryBuilder('i')
-            ->getQuery()
+        if (!in_array($direction, [static::NEXT, static::PREV])) {
+            throw new DomainException('Wrong parameter value');
+        }
+
+        $qb = $this->createQueryBuilder('i')
+            ->orderBy('i.id', 'DESC')
+            ->setParameter('ideaId', $ideaId)
+            ->setMaxResults($perPage)
         ;
+
+        if (static::NEXT === $direction) {
+            /** @var Idea[] $result */
+            $result = $qb->where('i.id < :ideaId')
+                ->getQuery()
+                ->getResult()
+            ;
+        } else {
+            /** @var Idea[] $result */
+            $result = $qb->where('i.id > :ideaId')
+                ->orderBy('i.id', 'ASC')
+                ->getQuery()
+                ->getResult()
+            ;
+            $result = array_reverse($result);
+        }
+
+        return $result;
     }
 
-    // /**
-    //  * @return Idea[] Returns an array of Idea objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /** @return Idea[] */
+    public function paginateByPage(int $pageNumber, int $perPage): array
     {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('i.id', 'ASC')
-            ->setMaxResults(10)
+        $offset = $pageNumber * $perPage - $perPage;
+
+        /** @var Idea[] $result */
+        $result = $this->createQueryBuilder('i')
+            ->orderBy('i.id', 'DESC')
+            ->setMaxResults($perPage)
+            ->setFirstResult($offset)
             ->getQuery()
             ->getResult()
         ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Idea
-    {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return $result;
     }
-    */
 }

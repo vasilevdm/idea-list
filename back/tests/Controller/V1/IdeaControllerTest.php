@@ -34,8 +34,10 @@ class IdeaControllerTest extends WebTestCase
 
     public function testListSuccess()
     {
-        $this->client->request(Request::METHOD_GET, $this->url);
+        $this->client->request(Request::METHOD_GET, $this->url.'/page');
+        $this->assertResponseIsSuccessful();
 
+        $this->client->request(Request::METHOD_GET, $this->url.'/list');
         $this->assertResponseIsSuccessful();
     }
 
