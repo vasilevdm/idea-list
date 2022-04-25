@@ -47,22 +47,13 @@ class ActionRequestResolver implements ArgumentValueResolverInterface
             return;
         }
 
-        try {
-            /** @var array<string,string|bool> $requestArray */
-            $requestArray = $this->decoder->decode($request->getContent(), 'json');
-        } catch (\Throwable $exception) {
-            throw new DomainException($exception->getMessage());
-        }
+        $requestArray = $this->decodeRequestContent($request);
 
         if ($request->attributes->has('id')) {
             $requestArray = array_merge($requestArray, ['id' => $request->attributes->getInt('id')]);
         }
 
-        try {
-            $dto = $this->denormalizer->denormalize($requestArray, $argument->getType());
-        } catch (\Throwable $exception) {
-            throw new DomainException($exception->getMessage());
-        }
+        $dto = $this->denormalizeRequestArray($requestArray, $argument->getType());
 
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
@@ -70,5 +61,32 @@ class ActionRequestResolver implements ArgumentValueResolverInterface
         }
 
         yield $dto;
+    }
+
+    /** @return array<string, string|int|bool> */
+    private function decodeRequestContent(Request $request): array
+    {
+        if (empty($request->getContent())) {
+            return [];
+        }
+
+        try {
+            /** @var array<string, string|int|bool> $requestArray */
+            $requestArray = $this->decoder->decode($request->getContent(), 'json');
+        } catch (\Throwable $exception) {
+            throw new DomainException($exception->getMessage());
+        }
+
+        return $requestArray;
+    }
+
+    /** @param array<string, string|int|bool> $requestArray */
+    private function denormalizeRequestArray(array $requestArray, string $className): ActionRequestInterface
+    {
+        try {
+            return $this->denormalizer->denormalize($requestArray, $className);
+        } catch (\Throwable $exception) {
+            throw new DomainException($exception->getMessage());
+        }
     }
 }

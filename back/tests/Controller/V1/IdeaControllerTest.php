@@ -53,6 +53,16 @@ class IdeaControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
+    public function testDeleteSuccess()
+    {
+        $idea = $this->client->getContainer()->get(IdeaRepository::class)->findOneBy([]);
+
+        $this->client->request(Request::METHOD_DELETE, $this->url.'/'.$idea->getId());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+    }
+
     protected function setUp(): void
     {
         $this->client = static::createClient();

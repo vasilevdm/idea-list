@@ -4,6 +4,8 @@ namespace App\Controller\V1;
 
 use App\Action\IdeaCreate\IdeaCreateAction;
 use App\Action\IdeaCreate\IdeaCreateRequest;
+use App\Action\IdeaDelete\IdeaDeleteAction;
+use App\Action\IdeaDelete\IdeaDeleteRequest;
 use App\Action\IdeaList\IdeaListAction;
 use App\Action\IdeaList\IdeaListRequest;
 use App\Action\IdeaPage\IdeaPageAction;
@@ -70,6 +72,16 @@ class IdeaController extends AbstractController
      * @Route("/ideas/{id}", methods={"PATCH"}, name="app.v1.ideas.update", requirements={"id"="\d+"})
      */
     public function update(IdeaUpdateRequest $request, IdeaUpdateAction $action): JsonResponse
+    {
+        $action->handle($request);
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route("/ideas/{id}", methods={"DELETE"}, name="app.v1.ideas.delete", requirements={"id"="\d+"})
+     */
+    public function delete(IdeaDeleteRequest $request, IdeaDeleteAction $action): JsonResponse
     {
         $action->handle($request);
 
