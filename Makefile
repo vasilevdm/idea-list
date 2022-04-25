@@ -8,7 +8,7 @@ init:
 
 tests:
 	docker-compose exec app bin/console doctrine:fixtures:load --group=ORM --no-interaction --env=test
-	docker-compose exec app bin/phpunit
+	docker-compose exec app bin/phpunit -vvv --testdox
 
 lint:
 	docker-compose run --rm app vendor/bin/php-cs-fixer fix

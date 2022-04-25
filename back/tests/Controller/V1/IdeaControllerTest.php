@@ -32,6 +32,13 @@ class IdeaControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 
+    public function testListSuccess()
+    {
+        $this->client->request(Request::METHOD_GET, $this->url);
+
+        $this->assertResponseIsSuccessful();
+    }
+
     protected function setUp(): void
     {
         $this->client = static::createClient();

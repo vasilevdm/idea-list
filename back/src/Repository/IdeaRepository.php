@@ -6,6 +6,7 @@ use App\Entity\Idea;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -45,6 +46,13 @@ class IdeaRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function getListQuery(): Query
+    {
+        return $this->createQueryBuilder('i')
+            ->getQuery()
+        ;
     }
 
     // /**
