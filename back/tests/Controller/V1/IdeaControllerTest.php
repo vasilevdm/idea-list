@@ -2,16 +2,38 @@
 
 namespace Tests\Controller\V1;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class IdeaControllerTest extends WebTestCase
 {
-    public function testSuccess()
-    {
-        $client = static::createClient();
+    private string $url = '/api/v1/ideas';
 
-        $client->request('GET', '/api/v1/idea');
+    private KernelBrowser $client;
+
+    public function testCreateSuccess()
+    {
+        $data = '{"title": "test title"}';
+
+        $this->client->request(Request::METHOD_POST, $this->url, [], [], [], $data);
 
         $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+    }
+
+    public function testCreateValidationFail()
+    {
+        $data = '{"title": ""}';
+
+        $this->client->request(Request::METHOD_POST, $this->url, [], [], [], $data);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+    }
+
+    protected function setUp(): void
+    {
+        $this->client = static::createClient();
     }
 }

@@ -149,6 +149,9 @@
     "phpstan/extension-installer": {
         "version": "1.1.0"
     },
+    "phpstan/phpdoc-parser": {
+        "version": "1.4.5"
+    },
     "phpstan/phpstan": {
         "version": "1.5.7"
     },
@@ -389,6 +392,12 @@
     "symfony/process": {
         "version": "v5.4.7"
     },
+    "symfony/property-access": {
+        "version": "v5.4.7"
+    },
+    "symfony/property-info": {
+        "version": "v5.4.7"
+    },
     "symfony/proxy-manager-bridge": {
         "version": "v5.4.6"
     },
@@ -408,6 +417,9 @@
     "symfony/runtime": {
         "version": "v5.4.7"
     },
+    "symfony/serializer": {
+        "version": "v5.4.7"
+    },
     "symfony/service-contracts": {
         "version": "v2.5.1"
     },
@@ -416,6 +428,21 @@
     },
     "symfony/string": {
         "version": "v5.4.3"
+    },
+    "symfony/translation-contracts": {
+        "version": "v2.5.1"
+    },
+    "symfony/validator": {
+        "version": "5.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.3",
+            "ref": "c32cfd98f714894c4f128bb99aa2530c1227603c"
+        },
+        "files": [
+            "config/packages/validator.yaml"
+        ]
     },
     "symfony/var-dumper": {
         "version": "v5.4.6"

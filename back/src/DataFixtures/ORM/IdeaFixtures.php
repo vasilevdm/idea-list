@@ -17,9 +17,7 @@ class IdeaFixtures extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         for ($i = 1; $i <= 100; ++$i) {
-            $idea = (new Idea())
-                ->setTitle(sprintf('Идея #%d', $i))
-            ;
+            $idea = new Idea(sprintf('Идея #%d', $i));
             $manager->persist($idea);
         }
         $manager->flush();

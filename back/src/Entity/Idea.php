@@ -16,7 +16,7 @@ class Idea
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -33,8 +33,10 @@ class Idea
      */
     private bool $completed;
 
-    public function __construct()
+    public function __construct(string $title)
     {
+        $this->id = null;
+        $this->title = $title;
         $this->createdAt = new \DateTimeImmutable();
         $this->completed = false;
     }
@@ -44,7 +46,7 @@ class Idea
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -56,12 +58,12 @@ class Idea
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getCompleted(): ?bool
+    public function getCompleted(): bool
     {
         return $this->completed;
     }
