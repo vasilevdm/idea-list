@@ -1,9 +1,8 @@
-import React from "react";
+import React, {useState} from "react";
 import styles from "./Idea.module.sass"
 import IdeaItem from "./IdeaItem";
-import {useState} from "react";
 import Idea from "./model/Idea.interface";
-
+ 
 function IdeaList() {
     const data: Idea[] = [
         {
@@ -38,8 +37,8 @@ function IdeaList() {
             }
         </ul>
         <nav>
-            <button>&laquo; prev</button>
-            <button className={styles.active}>next &raquo;</button>
+            <button type="button">&laquo; prev</button>
+            <button type="button" className={styles.active}>next &raquo;</button>
         </nav>
     </section>;
 }

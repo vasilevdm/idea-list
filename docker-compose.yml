@@ -33,7 +33,7 @@ services:
     working_dir: /app
     volumes:
       - ./front:/app
-    command: npm start
+    command: bash -c "npm ci && npm start"
 
 volumes:
   db-data:
