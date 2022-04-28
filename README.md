@@ -1,7 +1,9 @@
 
 # Приложение со списком идей
 ## Описание
-Фронт на React+Redux, бэк на Symfony. Docker-compose для локальной разработки.
+Фронт на React+Redux+Redux-Saga, бэк на Symfony5. Docker-compose для локальной разработки.
+
+Для решения проблемы с медленной выборкой на больших данных использовано, в зависимости от ситуации, 2 типа пагинации: limit + offset и limit + where по primary key
 
 ## Требования
 - docker engine 17+
