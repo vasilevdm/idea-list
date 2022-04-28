@@ -1,11 +1,20 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
+import {useSearchParams} from 'react-router-dom';
 import styles from './Idea.module.sass';
 import {requestByPage} from './ideaSlice';
 import {AppDispatch} from '../../app/store';
 
 function Navigation({prevDisabled, nextDisabled, page}: {prevDisabled: boolean, nextDisabled: boolean, page: number}) {
     const dispatch: AppDispatch = useDispatch();
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const handlePage = (pageNumber: number) => {
+        dispatch(requestByPage({page: pageNumber, perPage: 10}));
+        searchParams.set('page', pageNumber.toString());
+        setSearchParams(searchParams);
+    }
     
     return <nav className={styles.ideanav}>
         <button
@@ -15,7 +24,7 @@ function Navigation({prevDisabled, nextDisabled, page}: {prevDisabled: boolean, 
                 prevDisabled ? styles.ideanav__button_disabled : ''
             ].join(' ')}
             disabled={prevDisabled}
-            onClick={() => dispatch(requestByPage({page: page-1, perPage: 10}))}
+            onClick={() => handlePage(page-1)}
         >&laquo; prev</button>
 
             <span>{ page }</span>
@@ -27,7 +36,7 @@ function Navigation({prevDisabled, nextDisabled, page}: {prevDisabled: boolean, 
                 nextDisabled ? styles.ideanav__button_disabled : ''
             ].join(' ')}
             disabled={nextDisabled}
-            onClick={() => dispatch(requestByPage({page: page+1, perPage: 10}))}
+            onClick={() => handlePage(page+1)}
         >next &raquo;</button>
     </nav>;
 }

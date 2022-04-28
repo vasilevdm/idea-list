@@ -1,5 +1,6 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {useSearchParams} from 'react-router-dom';
 import styles from './Idea.module.sass'
 import IdeaItem from './IdeaItem';
 import Idea from './model/Idea.interface';
@@ -8,19 +9,24 @@ import {AppDispatch} from '../../app/store';
 import Navigation from './Navigation';
 
 function IdeaList() {
-    const dispatch: AppDispatch = useDispatch();
-    useEffect(() => {
-        dispatch(requestByPage({
-            page: 1,
-            perPage: 10
-        }));
-    }, []);
+    const [searchParams] = useSearchParams();
+    const queryPage = Number(searchParams.get('page')) || 1;
 
     const loading: boolean = useSelector(selectLoading);
     const ideaList: Idea[] = useSelector(selectIdeaList);
     const page: number = useSelector(selectPage);
 
-    const prevDisabled = page === 1 || loading;
+    const dispatch: AppDispatch = useDispatch();
+    useEffect(() => {
+        if (!page) {
+            dispatch(requestByPage({
+                page: queryPage,
+                perPage: 10
+            }));
+        }
+    }, []);
+
+    const prevDisabled = useMemo(() => page === 1 || loading, [page, loading]);
     const nextDisabled = loading;
 
     return <section className={styles.container}>

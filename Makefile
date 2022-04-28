@@ -1,4 +1,5 @@
 init:
+	docker-compose run --rm node npm ci
 	docker-compose up -d
 	docker-compose run --rm app /app/wait-for-it.sh db:5432
 	docker-compose exec app composer install --no-interaction
