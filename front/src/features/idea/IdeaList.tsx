@@ -12,7 +12,7 @@ import {AppDispatch} from '../../app/store';
 import Navigation from './Navigation';
 
 function IdeaList() {
-        const ideaList: Idea[] = useSelector(selectIdeaList);
+    const ideaList: Idea[] = useSelector(selectIdeaList);
     const error: string = useSelector(selectError);
 
     const dispatch: AppDispatch = useDispatch();

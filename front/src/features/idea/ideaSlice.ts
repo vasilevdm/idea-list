@@ -4,6 +4,7 @@ import {RootState} from '../../app/store';
 import ListResponse from './model/ListResponse.interface';
 import FetchByPageRequest from './model/fetchByPageRequest.interface';
 import FetchByIdRequest from './model/fetchByIdRequest.interface';
+import UpdateIdeaRequest from './model/UpdateIdeaRequest.interface';
 
 export interface IdeaState {
     loading: boolean;
@@ -58,7 +59,20 @@ export const ideaSlice = createSlice({
             }
         },
         loadingFailed: (state, action: PayloadAction<string>) => ({...state, loading: false, error: action.payload}),
-        requestCreateIdea: (state, action: PayloadAction<string>) => ({...state})
+        requestCreateIdea: (state, action: PayloadAction<string>) => ({...state}),
+        requestUpdateIdea: (state, action: PayloadAction<UpdateIdeaRequest>) => {
+            const ideaList = state.ideaList.map(idea => {
+                if (idea.id === action.payload.id) {
+                    return {
+                        ...idea,
+                        title: action.payload.title,
+                        completed: action.payload.completed
+                    }
+                }
+                return idea;
+            });
+            return {...state, ideaList};
+        }
     }
 });
 
@@ -70,7 +84,8 @@ export const {
     decrementPage,
     loadingComplete,
     loadingFailed,
-    requestCreateIdea } = ideaSlice.actions;
+    requestCreateIdea,
+    requestUpdateIdea } = ideaSlice.actions;
 
 export const selectLoading = (state: RootState) => state.idea.loading;
 export const selectIdeaList = (state: RootState) => state.idea.ideaList;

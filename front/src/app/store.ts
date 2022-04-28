@@ -1,7 +1,7 @@
 import {configureStore, ThunkAction, Action} from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga'
 import ideaReducer from '../features/idea/ideaSlice';
-import {fetchIdeasByPageSaga, fetchIdeasByIdSaga, createIdeaSaga} from '../features/idea/ideaSagas';
+import {fetchIdeasByPageSaga, fetchIdeasByIdSaga, createIdeaSaga, updateIdeaSaga} from '../features/idea/ideaSagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -15,6 +15,7 @@ export const store = configureStore({
 sagaMiddleware.run(fetchIdeasByPageSaga);
 sagaMiddleware.run(fetchIdeasByIdSaga);
 sagaMiddleware.run(createIdeaSaga);
+sagaMiddleware.run(updateIdeaSaga);
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
