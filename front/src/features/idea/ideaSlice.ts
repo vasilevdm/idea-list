@@ -72,7 +72,8 @@ export const ideaSlice = createSlice({
                 return idea;
             });
             return {...state, ideaList};
-        }
+        },
+        requestRemoveIdea: (state, action: PayloadAction<number>) => ({...state, loading: true})
     }
 });
 
@@ -85,7 +86,8 @@ export const {
     loadingComplete,
     loadingFailed,
     requestCreateIdea,
-    requestUpdateIdea } = ideaSlice.actions;
+    requestUpdateIdea,
+    requestRemoveIdea } = ideaSlice.actions;
 
 export const selectLoading = (state: RootState) => state.idea.loading;
 export const selectIdeaList = (state: RootState) => state.idea.ideaList;

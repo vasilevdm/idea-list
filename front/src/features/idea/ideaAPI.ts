@@ -35,3 +35,5 @@ export const patchIdea = (request: UpdateIdeaRequest) => {
         { title, completed }
     );
 }
+
+export const deleteIdea = (id: number) => axios.delete<null>(`${apiHost}/api/v1/ideas/${id}`)

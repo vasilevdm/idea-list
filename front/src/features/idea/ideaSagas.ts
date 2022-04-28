@@ -1,18 +1,21 @@
-import {call, put, takeEvery, takeLatest} from 'redux-saga/effects';
+import {call, put, takeEvery, takeLatest, select} from 'redux-saga/effects';
 import {PayloadAction} from '@reduxjs/toolkit';
 import {AxiosResponse} from 'axios';
-import {fetchById, fetchByPage, addIdea, patchIdea} from './ideaAPI';
+import {fetchById, fetchByPage, addIdea, patchIdea, deleteIdea} from './ideaAPI';
 import FetchByPageRequest from './model/fetchByPageRequest.interface';
 import FetchByIdRequest from './model/fetchByIdRequest.interface';
 import FetchDirection from './model/fetchDirection.enum';
 import {
-    decrementPage,
+    decrementPage, FetchState,
     incrementPage,
     loadingComplete,
     loadingFailed,
     requestById,
     requestByPage,
-    requestCreateIdea, requestUpdateIdea,
+    requestCreateIdea,
+    requestRemoveIdea,
+    requestUpdateIdea,
+    selectFetch,
     setPage
 } from './ideaSlice';
 import ListResponse from './model/ListResponse.interface';
@@ -59,7 +62,18 @@ function* createIdea(action: PayloadAction<string>): Generator<any> {
 
 function* updateIdea(action: PayloadAction<UpdateIdeaRequest>): Generator<any> {
     try {
-        yield call(patchIdea, action.payload)
+        yield call(patchIdea, action.payload);
+    } catch (e) {
+        yield put(loadingFailed('updateIdea error'));
+    }
+}
+
+function* removeIdea(action: PayloadAction<number>): Generator<any> {
+    try {
+        yield call(deleteIdea, action.payload);
+        const fetch = (yield select(selectFetch)) as FetchState;
+        const listResponse = (yield call(fetchById, {ideaId: fetch.prevId+1, direction: FetchDirection.NEXT, perPage: 10})) as AxiosResponse<ListResponse<Idea>>;
+        yield put(loadingComplete(listResponse.data));
     } catch (e) {
         yield put(loadingFailed('updateIdea error'));
     }
@@ -74,9 +88,13 @@ export function* fetchIdeasByIdSaga(): Generator<any> {
 }
 
 export function* createIdeaSaga(): Generator<any> {
-    yield takeEvery(requestCreateIdea.type, createIdea);
+    yield takeLatest(requestCreateIdea.type, createIdea);
 }
 
 export function* updateIdeaSaga(): Generator<any> {
     yield takeEvery(requestUpdateIdea.type, updateIdea);
+}
+
+export function* removeIdeaSaga(): Generator<any> {
+    yield takeLatest(requestRemoveIdea.type, removeIdea);
 }
