@@ -1,0 +1,15 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./.docker/nginx/prod:/etc/nginx/conf.d
+    ports:
+      - "88:80"
+
+  app:
+    volumes:
+      - ./back/.env.prod:/app/back/.env
+
+volumes:
+  db-data:

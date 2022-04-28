@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, RefObject, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Idea.module.sass'
 import Idea from './model/Idea.interface';
@@ -9,6 +9,7 @@ function IdeaItem({item} : {item: Idea}) {
     const dispatch: AppDispatch = useDispatch();
     const [isEdit, setIsEdit] = useState(false);
     const loading = useSelector(selectLoading);
+    const inputRef = useRef() as RefObject<HTMLInputElement>;
 
     const onPressEnter = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === 'Enter') {
@@ -18,7 +19,7 @@ function IdeaItem({item} : {item: Idea}) {
             }
             setIsEdit(false);
         }
-    }
+    };
 
     const onCheck = (): void => {
         dispatch(requestUpdateIdea({...item, completed: !item.completed}));
@@ -26,7 +27,14 @@ function IdeaItem({item} : {item: Idea}) {
 
     const onDelete = (): void => {
         dispatch(requestRemoveIdea(item.id));
-    }
+    };
+
+    const onDoubleClick = (): void => {
+        setIsEdit(true);
+    };
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, [isEdit])
 
     return <li className={[styles.idea, item.completed ? styles.idea_active : ''].join(' ')}>
         <div className={styles.idea__check}>
@@ -40,17 +48,17 @@ function IdeaItem({item} : {item: Idea}) {
                 isEdit
                     ? <input
                         type="text"
-                        autoFocus
                         defaultValue={item.title}
                         onBlur={() => setIsEdit(false)}
                         onKeyDown={onPressEnter}
+                        ref={inputRef}
                     />
                     : <span
-                        onDoubleClick={() => setIsEdit(true)}
+                        onDoubleClick={onDoubleClick}
                     >{ item.title }</span>
             }
         </div>
-        <button className={styles.idea__delete} onClick={onDelete} disabled={loading}>❌</button>
+        <button type="button" className={styles.idea__delete} onClick={onDelete} disabled={loading}>❌</button>
     </li>;
 }
 
