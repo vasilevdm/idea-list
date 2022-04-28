@@ -57,11 +57,20 @@ export const ideaSlice = createSlice({
                 }
             }
         },
-        loadingFailed: (state, action: PayloadAction<string>) => ({...state, loading: false, error: action.payload})
+        loadingFailed: (state, action: PayloadAction<string>) => ({...state, loading: false, error: action.payload}),
+        requestCreateIdea: (state, action: PayloadAction<string>) => ({...state})
     }
 });
 
-export const { requestByPage, requestById, setPage, incrementPage, decrementPage, loadingComplete, loadingFailed } = ideaSlice.actions;
+export const {
+    requestByPage,
+    requestById,
+    setPage,
+    incrementPage,
+    decrementPage,
+    loadingComplete,
+    loadingFailed,
+    requestCreateIdea } = ideaSlice.actions;
 
 export const selectLoading = (state: RootState) => state.idea.loading;
 export const selectIdeaList = (state: RootState) => state.idea.ideaList;

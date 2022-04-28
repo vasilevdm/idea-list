@@ -1,7 +1,7 @@
-import {call, put, takeLatest} from 'redux-saga/effects';
+import {call, put, takeEvery, takeLatest} from 'redux-saga/effects';
 import {PayloadAction} from '@reduxjs/toolkit';
 import {AxiosResponse} from 'axios';
-import {fetchById, fetchByPage} from './ideaAPI';
+import {fetchById, fetchByPage, addIdea} from './ideaAPI';
 import FetchByPageRequest from './model/fetchByPageRequest.interface';
 import FetchByIdRequest from './model/fetchByIdRequest.interface';
 import FetchDirection from './model/fetchDirection.enum';
@@ -10,8 +10,9 @@ import {
     incrementPage,
     loadingComplete,
     loadingFailed,
-    requestByPage,
     requestById,
+    requestByPage,
+    requestCreateIdea,
     setPage
 } from './ideaSlice';
 import ListResponse from './model/ListResponse.interface';
@@ -46,10 +47,23 @@ function* fetchIdeasById(action: PayloadAction<FetchByIdRequest>): Generator<any
     }
 }
 
+function* createIdea(action: PayloadAction<string>): Generator<any> {
+    try {
+        yield call(addIdea, action.payload);
+        yield put(requestByPage({page: 1, perPage: 10}));
+    } catch (e) {
+        yield put(loadingFailed('createIdea error'));
+    }
+}
+
 export function* fetchIdeasByPageSaga(): Generator<any> {
     yield takeLatest(requestByPage.type, fetchIdeasByPage);
 }
 
 export function* fetchIdeasByIdSaga(): Generator<any> {
     yield takeLatest(requestById.type, fetchIdeasById);
+}
+
+export function* createIdeaSaga(): Generator<any> {
+    yield takeEvery(requestCreateIdea.type, createIdea);
 }

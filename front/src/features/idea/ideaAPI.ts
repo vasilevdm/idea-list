@@ -21,3 +21,8 @@ export const fetchById = (request: FetchByIdRequest) => {
         { params: {ideaId, direction, perPage} }
     );
 }
+
+export const addIdea = (title: string) => axios.post<Idea>(
+        `${apiHost}/api/v1/ideas`,
+        { title }
+    )
