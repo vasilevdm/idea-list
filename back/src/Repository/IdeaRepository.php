@@ -64,19 +64,22 @@ class IdeaRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('i')
             ->orderBy('i.id', 'DESC')
-            ->setParameter('ideaId', $ideaId)
             ->setMaxResults($perPage)
         ;
 
         if (static::NEXT === $direction) {
+            if (0 !== $ideaId) {
+                $qb = $qb->where('i.id < :ideaId')
+                    ->setParameter('ideaId', $ideaId);
+            }
             /** @var Idea[] $result */
-            $result = $qb->where('i.id < :ideaId')
-                ->getQuery()
+            $result = $qb->getQuery()
                 ->getResult()
             ;
         } else {
             /** @var Idea[] $result */
             $result = $qb->where('i.id > :ideaId')
+                ->setParameter('ideaId', $ideaId)
                 ->orderBy('i.id', 'ASC')
                 ->getQuery()
                 ->getResult()

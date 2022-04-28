@@ -1,20 +1,25 @@
-import React from 'react';
-import {useDispatch} from 'react-redux';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {useSearchParams} from 'react-router-dom';
 import styles from './Idea.module.sass';
-import {requestByPage} from './ideaSlice';
+import {requestById, selectFetch} from './ideaSlice';
 import {AppDispatch} from '../../app/store';
+import FetchDirection from './model/fetchDirection.enum';
 
 function Navigation({prevDisabled, nextDisabled, page}: {prevDisabled: boolean, nextDisabled: boolean, page: number}) {
     const dispatch: AppDispatch = useDispatch();
 
+    const fetch = useSelector(selectFetch);
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const handlePage = (pageNumber: number) => {
-        dispatch(requestByPage({page: pageNumber, perPage: 10}));
-        searchParams.set('page', pageNumber.toString());
-        setSearchParams(searchParams);
+    const handlePage = (ideaId: number, direction: FetchDirection) => {
+        dispatch(requestById({ideaId, direction, perPage: 10}));
     }
+
+    useEffect(() => {
+        searchParams.set('page', page.toString());
+        setSearchParams(searchParams);
+    }, [page])
     
     return <nav className={styles.ideanav}>
         <button
@@ -24,7 +29,7 @@ function Navigation({prevDisabled, nextDisabled, page}: {prevDisabled: boolean, 
                 prevDisabled ? styles.ideanav__button_disabled : ''
             ].join(' ')}
             disabled={prevDisabled}
-            onClick={() => handlePage(page-1)}
+            onClick={() => handlePage(fetch.prevId, FetchDirection.PREV)}
         >&laquo; prev</button>
 
             <span>{ page }</span>
@@ -36,7 +41,7 @@ function Navigation({prevDisabled, nextDisabled, page}: {prevDisabled: boolean, 
                 nextDisabled ? styles.ideanav__button_disabled : ''
             ].join(' ')}
             disabled={nextDisabled}
-            onClick={() => handlePage(page+1)}
+            onClick={() => handlePage(fetch.nextId, FetchDirection.NEXT)}
         >next &raquo;</button>
     </nav>;
 }
