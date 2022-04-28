@@ -4,7 +4,7 @@ import {useSearchParams} from 'react-router-dom';
 import styles from './Idea.module.sass'
 import IdeaItem from './IdeaItem';
 import Idea from './model/Idea.interface';
-import {requestByPage, selectIdeaList, selectLoading, selectPage} from './ideaSlice';
+import {requestByPage, selectError, selectIdeaList, selectLoading, selectPage} from './ideaSlice';
 import {AppDispatch} from '../../app/store';
 import Navigation from './Navigation';
 
@@ -15,6 +15,7 @@ function IdeaList() {
     const loading: boolean = useSelector(selectLoading);
     const ideaList: Idea[] = useSelector(selectIdeaList);
     const page: number = useSelector(selectPage);
+    const error: string = useSelector(selectError);
 
     const dispatch: AppDispatch = useDispatch();
     useEffect(() => {
@@ -39,6 +40,7 @@ function IdeaList() {
             }
         </ul>
         <Navigation prevDisabled={prevDisabled} nextDisabled={nextDisabled} page={page} />
+        <div className={styles.loading_error}>{error}</div>
     </section>;
 }
 

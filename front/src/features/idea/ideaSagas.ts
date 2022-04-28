@@ -1,5 +1,6 @@
 import {call, put, takeLatest} from 'redux-saga/effects';
 import {PayloadAction} from '@reduxjs/toolkit';
+import {AxiosResponse} from 'axios';
 import {fetchByPage} from './ideaAPI';
 import FetchByPageRequest from './model/fetchByPageRequest.interface';
 import {
@@ -13,11 +14,11 @@ import Idea from './model/Idea.interface';
 
 function* fetchIdeasByPage(action: PayloadAction<FetchByPageRequest>): Generator<any> {
     try {
-        const listResponse = (yield call(fetchByPage, action.payload)) as ListResponse<Idea>;
-        yield put(loadingComplete(listResponse));
+        const listResponse = (yield call(fetchByPage, action.payload)) as AxiosResponse<ListResponse<Idea>>;
+        yield put(loadingComplete(listResponse.data));
         yield put(setPage(action.payload.page));
     } catch (e) {
-        yield put(loadingFailed);
+        yield put(loadingFailed('fetchIdeasByPage error'));
     }
 }
 

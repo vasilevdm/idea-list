@@ -7,20 +7,22 @@ import FetchByPageRequest from './model/fetchByPageRequest.interface';
 export interface IdeaState {
     loading: boolean;
     ideaList: Idea[];
-    page: number
+    page: number,
+    error: string
 }
 
 const initialState: IdeaState = {
     loading: false,
     ideaList: [],
-    page: 0
+    page: 0,
+    error: ''
 };
 
 export const ideaSlice = createSlice({
     name: 'idea',
     initialState,
     reducers: {
-        requestByPage: (state, action: PayloadAction<FetchByPageRequest>) => ({...state, loading: true}),
+        requestByPage: (state, action: PayloadAction<FetchByPageRequest>) => ({...state, loading: true, error: ''}),
         setPage: (state, action: PayloadAction<number>) => ({
                 ...state,
                 page: action.payload
@@ -30,7 +32,7 @@ export const ideaSlice = createSlice({
                 loading: false,
                 ideaList: action.payload.items
             }),
-        loadingFailed: state => ({...state, loading: true})
+        loadingFailed: (state, action: PayloadAction<string>) => ({...state, loading: true, error: action.payload})
     }
 });
 
@@ -39,5 +41,6 @@ export const { requestByPage, setPage, loadingComplete, loadingFailed } = ideaSl
 export const selectLoading = (state: RootState) => state.idea.loading;
 export const selectIdeaList = (state: RootState) => state.idea.ideaList;
 export const selectPage = (state: RootState) => state.idea.page;
+export const selectError = (state: RootState) => state.idea.error;
 
 export default ideaSlice.reducer;
