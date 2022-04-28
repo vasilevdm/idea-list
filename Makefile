@@ -10,7 +10,10 @@ tests:
 	docker-compose exec app bin/console doctrine:fixtures:load --group=ORM --no-interaction --env=test
 	docker-compose exec app bin/phpunit -vvv --testdox
 
-lint:
+lint-front:
+	cd front && npx eslint "src/*"
+
+lint-back:
 	docker-compose run --rm app vendor/bin/php-cs-fixer fix
 	docker-compose run --rm app vendor/bin/phpstan analyze src --level max -c phpstan.neon
 
