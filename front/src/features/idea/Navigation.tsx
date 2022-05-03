@@ -1,17 +1,17 @@
-import React, {useEffect, useMemo} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, {useEffect} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import styles from './Idea.module.sass';
 import {requestById, requestByPage, selectFetch, selectLoading, selectPage} from './ideaSlice';
 import {AppDispatch} from '../../app/store';
 import FetchDirection from './model/fetchDirection.enum';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
 
 function Navigation() {
-    const dispatch: AppDispatch = useDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
 
-    const loading: boolean = useSelector(selectLoading);
-    const page: number = useSelector(selectPage);
-    const fetch = useSelector(selectFetch);
+    const loading: boolean = useAppSelector(selectLoading);
+    const page: number = useAppSelector(selectPage);
+    const fetch = useAppSelector(selectFetch);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const queryPage = Number(searchParams.get('page')) || 1;
@@ -28,14 +28,17 @@ function Navigation() {
             searchParams.set('page', page.toString());
             setSearchParams(searchParams);
         }
-    }, [page])
+    }, [page]);
 
-    const prevDisabled = useMemo(() => page === 1 || loading, [page, loading]);
-    const nextDisabled = loading;
-
-    const handlePage = (ideaId: number, direction: FetchDirection) => {
-        dispatch(requestById({ideaId, direction, perPage: 10}));
+    const navigatePrev = (): void => {
+        dispatch(requestById({ideaId: fetch.prevId, direction: FetchDirection.PREV, perPage: 10}));
     }
+    const navigateNext = (): void => {
+        dispatch(requestById({ideaId: fetch.nextId, direction: FetchDirection.NEXT, perPage: 10}));
+    }
+
+    const prevDisabled = page === 1 || loading;
+    const nextDisabled = loading;
     
     return <nav className={styles.ideanav}>
         <button
@@ -45,7 +48,7 @@ function Navigation() {
                 prevDisabled ? styles.ideanav__button_disabled : ''
             ].join(' ')}
             disabled={prevDisabled}
-            onClick={() => handlePage(fetch.prevId, FetchDirection.PREV)}
+            onClick={navigatePrev}
         >&laquo; prev</button>
 
             <span>{ page }</span>
@@ -57,7 +60,7 @@ function Navigation() {
                 nextDisabled ? styles.ideanav__button_disabled : ''
             ].join(' ')}
             disabled={nextDisabled}
-            onClick={() => handlePage(fetch.nextId, FetchDirection.NEXT)}
+            onClick={navigateNext}
         >next &raquo;</button>
     </nav>;
 }
