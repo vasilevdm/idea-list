@@ -1,21 +1,24 @@
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
 import styles from './Idea.module.sass'
 import IdeaItem from './IdeaItem';
 import Idea from './model/Idea.interface';
 import {
     requestCreateIdea,
     selectError,
-    selectIdeaList,
+    ideaSelectors,
+    selectLoading,
 } from './ideaSlice';
 import {AppDispatch} from '../../app/store';
 import Navigation from './Navigation';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import IdeaLoader from './IdeaLoader';
 
 function IdeaList() {
-    const ideaList: Idea[] = useSelector(selectIdeaList);
-    const error: string = useSelector(selectError);
+    const ideaList: Idea[] = useAppSelector(ideaSelectors.selectAll);
+    const error: string = useAppSelector(selectError);
+    const loading: boolean = useAppSelector(selectLoading);
 
-    const dispatch: AppDispatch = useDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
 
     const onPressEnter = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === 'Enter') {
@@ -27,11 +30,20 @@ function IdeaList() {
 
     return <section className={styles.container}>
         <div className={styles.header}>
-            <input className={styles.header__input} type="text" placeholder="enter text..." onKeyDown={onPressEnter}/>
+            <input
+                className={styles.header__input}
+                type="text"
+                placeholder="enter text..."
+                disabled={loading}
+                onKeyDown={onPressEnter}
+            />
         </div>
+        {
+            !ideaList.length && <IdeaLoader/>
+        }
         <ul className={styles.idea_list}>
             {
-                ideaList ? ideaList.map(idea => <IdeaItem key={idea.id} item={idea} />): ''
+                ideaList.map(idea => <IdeaItem key={idea.id} item={idea} />)
             }
         </ul>
         <Navigation />
